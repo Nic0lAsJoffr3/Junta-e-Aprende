@@ -1,0 +1,274 @@
+:root {
+  color-scheme: light;
+
+  --background: #f1f5f9;
+  --surface: #ffffff;
+  --surface-alt: #f8fafc;
+
+  --text: #0f172a;
+  --muted: #475569;
+
+  --line: #cbd5e1;
+  --line-strong: #94a3b8;
+
+  --theme-accent: #2563eb;
+  --theme-accent-dark: #1e40af;
+  --theme-accent-soft: #dbeafe;
+
+  --success: #15803d;
+  --success-soft: #dcfce7;
+
+  --danger: #dc2626;
+  --danger-dark: #b91c1c;
+  --danger-soft: #fee2e2;
+
+  --warning: #d97706;
+  --warning-soft: #fef3c7;
+
+  --radius: 16px;
+  --radius-small: 12px;
+
+  --shadow: 0 8px 0 var(--line);
+  --shadow-small: 0 4px 0 var(--line);
+
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --background: #0b1120;
+  --surface: #111827;
+  --surface-alt: #1e293b;
+
+  --text: #f8fafc;
+  --muted: #cbd5e1;
+
+  --line: #334155;
+  --line-strong: #64748b;
+
+  --theme-accent: #3b82f6;
+  --theme-accent-dark: #1d4ed8;
+  --theme-accent-soft: #1e3a8a;
+
+  --success: #22c55e;
+  --success-soft: #14532d;
+
+  --danger: #ef4444;
+  --danger-dark: #b91c1c;
+  --danger-soft: #7f1d1d;
+
+  --warning: #f59e0b;
+  --warning-soft: #78350f;
+
+  --shadow: 0 8px 0 rgba(0, 0, 0, 0.35);
+  --shadow-small: 0 4px 0 rgba(0, 0, 0, 0.35);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font);
+  color: var(--text);
+  background: var(--background);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  line-height: 1.2;
+  font-weight: 900;
+  color: var(--text);
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--theme-accent);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 3px solid var(--theme-accent);
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: absolute;
+  left: 16px;
+  top: -100px;
+  z-index: 100;
+  padding: 12px 18px;
+  background: var(--theme-accent);
+  color: #ffffff;
+  border-radius: 12px;
+  font-weight: 800;
+  text-decoration: none;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 16px;
+}
+
+form {
+  display: grid;
+  gap: 18px;
+}
+
+fieldset {
+  margin: 0;
+  padding: clamp(14px, 2vw, 20px);
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+}
+
+legend {
+  padding: 0 10px;
+  font-weight: 900;
+  color: var(--text);
+}
+
+.field {
+  display: grid;
+  gap: 7px;
+}
+
+label {
+  font-weight: 800;
+  color: var(--text);
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 13px 15px;
+  background: var(--surface);
+  color: var(--text);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-small);
+  font-weight: 600;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+textarea {
+  min-height: 92px;
+  resize: vertical;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--theme-accent);
+  box-shadow: 0 0 0 4px var(--theme-accent-soft);
+  outline: none;
+}
+
+input.invalid,
+textarea.invalid {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 4px var(--danger-soft);
+}
+
+.character-count {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--muted);
+  text-align: right;
+}
+
+.character-count.limit {
+  color: var(--danger);
+}
+
+button,
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 20px;
+  background: var(--theme-accent);
+  color: #ffffff;
+  border: 2px solid var(--theme-accent-dark);
+  border-radius: var(--radius-small);
+  font-weight: 900;
+  text-decoration: none;
+  box-shadow: 0 4px 0 var(--theme-accent-dark);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+button svg,
+.button svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+}
+
+button:hover:not(:disabled),
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 var(--theme-accent-dark);
+}
+
+button:active:not(:disabled),
+.button:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 var(--theme-accent-dark);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: var(--shadow-small);
+}
+
+.status {
+  min-height: 22px;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.status.error {
+  color: var(--danger);
+}
+
+.status.success {
+  color: var(--success);
+}
+
+.hint {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 0.92rem;
+  font-weight: 600;
+}

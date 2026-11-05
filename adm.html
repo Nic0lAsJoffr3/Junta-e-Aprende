@@ -1,0 +1,611 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+  <title>Junta&amp;Aprende — Administrador de partidas</title>
+
+
+  <meta
+    name="description"
+    content="Painel do professor para criar, editar, apresentar e reiniciar partidas do Junta&Aprende."
+  >
+  <meta name="author" content="Nícolas Joffre De Souza">
+  <meta name="theme-color" content="#2563eb">
+
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Junta&amp;Aprende">
+  <meta property="og:title" content="Junta&amp;Aprende — Administrador de partidas">
+  <meta
+    property="og:description"
+    content="Crie, edite, apresente e reinicie partidas educativas do Junta&Aprende."
+  >
+  <meta property="og:url" content="https://junta.e.aprende.nicolasjoffre.com.br/adm.html">
+  <meta property="og:image" content="https://junta.e.aprende.nicolasjoffre.com.br/assets/logo.png">
+
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Junta&amp;Aprende — Administrador de partidas">
+  <meta
+    name="twitter:description"
+    content="Crie, edite, apresente e reinicie partidas educativas do Junta&Aprende."
+  >
+  <meta name="twitter:image" content="https://junta.e.aprende.nicolasjoffre.com.br/assets/logo.png">
+
+
+  <link rel="icon" href="assets/icon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="assets/icon.ico" type="image/x-icon">
+
+
+  <link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/components.css">
+
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/adm.js" defer></script>
+
+
+  <style>
+    .view[hidden] {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">
+    Pular para o conteúdo principal
+  </a>
+
+
+  <div class="container">
+    <header>
+      <h1>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/>
+          <path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/>
+        </svg>
+        Junta&amp;Aprende
+      </h1>
+
+
+      <div class="top-actions">
+        <nav class="nav-links" aria-label="Navegação principal">
+          <a href="config.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1-1.6 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.6-1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/>
+            </svg>
+            Configurações
+          </a>
+
+
+          <a
+            href="index.html"
+            class="play-link"
+            aria-label="Ir para a área dos jogadores"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M6 12h4M8 10v4"/>
+              <path d="M15 11h.01M18 13h.01"/>
+              <path d="M17.3 5H6.7a4 4 0 00-3.9 4.9l1.4 6A3 3 0 009.1 18l1.1-2h3.6l1.1 2a3 3 0 005.1-2.1l1.4-6A4 4 0 0017.3 5z"/>
+            </svg>
+            Jogar
+          </a>
+        </nav>
+      </div>
+    </header>
+
+
+    <main id="main-content">
+      <section id="home-view" class="view" aria-labelledby="home-title">
+        <div class="card home-card">
+          <h2 id="home-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 3v18h18"/>
+              <path d="M7 15l4-5 3 3 5-7"/>
+            </svg>
+            Painel do professor
+          </h2>
+
+
+          <div class="home-actions">
+            <button type="button" id="go-create" class="main-action">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 5v14M5 12h14"/>
+              </svg>
+              Criar nova partida
+            </button>
+
+
+            <button type="button" id="go-edit" class="secondary main-action">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 20h9"/>
+                <path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/>
+              </svg>
+              Editar partida existente
+            </button>
+          </div>
+        </div>
+      </section>
+
+
+      <section id="create-view" class="view" hidden aria-labelledby="create-title">
+        <button
+          type="button"
+          id="back-from-create"
+          class="back-button"
+          aria-label="Voltar para o painel do professor"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          Voltar
+        </button>
+
+
+        <form id="game-form" class="card" novalidate>
+          <h2 id="create-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+            Criar nova partida
+          </h2>
+
+
+          <div class="field">
+            <label for="title">Título da partida</label>
+            <input
+              id="title"
+              name="title"
+              required
+              maxlength="120"
+              autocomplete="off"
+              aria-describedby="title-count"
+            >
+            <span
+              id="title-count"
+              class="character-count"
+              data-count-for="title"
+              aria-live="polite"
+            >
+              120 caracteres restantes
+            </span>
+          </div>
+
+
+          <div class="field">
+            <label>Tema visual da tela</label>
+
+            <div class="theme-buttons" id="theme-grid"></div>
+
+            <input type="hidden" id="theme" value="none">
+          </div>
+
+
+          <div class="field">
+            <label>Modo da tela de apresentação</label>
+
+            <div class="theme-buttons" id="screen-mode-grid"></div>
+
+            <input type="hidden" id="screen-mode" value="light">
+          </div>
+
+
+          <div class="field">
+            <label>Cor da tela de apresentação</label>
+
+            <div class="color-grid" id="screen-color-grid"></div>
+
+            <input type="hidden" id="screen-color" value="#2563eb">
+          </div>
+
+
+          <div class="field">
+            <label for="edit-password">Senha para editar esta partida</label>
+            <input
+              id="edit-password"
+              name="edit-password"
+              type="password"
+              required
+              autocomplete="new-password"
+              aria-describedby="edit-password-hint"
+            >
+            <p id="edit-password-hint" class="hint">
+              Guarde esta senha. Ela será necessária para editar a partida em outro dispositivo.
+            </p>
+          </div>
+
+
+          <fieldset>
+            <legend>Perguntas e respostas</legend>
+
+
+            <p class="hint">
+              Crie de 5 a 20 pares. Perguntas e respostas não podem se repetir.
+            </p>
+
+
+            <div id="items"></div>
+
+
+            <div class="actions">
+              <button type="button" id="add-item" class="secondary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 5v14M5 12h14"/>
+                </svg>
+                Adicionar par
+              </button>
+            </div>
+          </fieldset>
+
+
+          <div class="actions">
+            <button type="submit" id="save-button" class="create-button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                <path d="M17 21v-8H7v8M7 3v5h8"/>
+              </svg>
+              Criar partida
+            </button>
+          </div>
+
+
+          <p id="status" class="status" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
+
+      <section id="edit-view" class="view" hidden aria-labelledby="edit-title">
+        <button
+          type="button"
+          id="back-from-edit"
+          class="back-button"
+          aria-label="Voltar para o painel do professor"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          Voltar
+        </button>
+
+
+        <section class="card" aria-labelledby="saved-title">
+          <h2 id="saved-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+              <path d="M17 21v-8H7v8M7 3v5h8"/>
+            </svg>
+            Partidas deste dispositivo
+          </h2>
+
+
+          <div id="saved-games" class="saved-games"></div>
+
+
+          <p id="no-saved-games" class="hint" hidden>
+            Não há partidas salvas neste navegador. Você pode abrir uma partida pelo código e senha abaixo.
+          </p>
+        </section>
+
+
+        <section class="card" aria-labelledby="manual-title">
+          <h2 id="manual-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="11" width="18" height="11" rx="2"/>
+              <path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+            Abrir com código e senha
+          </h2>
+
+
+          <form id="load-form" novalidate>
+            <div class="field">
+              <label for="load-code">Código da partida</label>
+              <input
+                id="load-code"
+                name="load-code"
+                required
+                maxlength="6"
+                autocomplete="off"
+              >
+            </div>
+
+
+            <div class="field">
+              <label for="load-password">Senha de edição</label>
+              <input
+                id="load-password"
+                name="load-password"
+                type="password"
+                required
+                autocomplete="current-password"
+              >
+            </div>
+
+
+            <button type="submit">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 20h9"/>
+                <path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/>
+              </svg>
+              Abrir para edição
+            </button>
+
+
+            <p id="load-status" class="status" role="status" aria-live="polite"></p>
+          </form>
+        </section>
+
+
+        <section class="card" aria-labelledby="new-from-edit-title">
+          <h2 id="new-from-edit-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+            Criar outra partida
+          </h2>
+
+
+          <button type="button" id="go-create-from-edit">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+            Criar nova partida
+          </button>
+        </section>
+      </section>
+
+
+      <section id="editor-view" class="view" hidden aria-labelledby="editor-title">
+        <button
+          type="button"
+          id="back-from-editor"
+          class="back-button"
+          aria-label="Voltar para a lista de partidas"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          Voltar
+        </button>
+
+
+        <section class="card" aria-labelledby="editor-game-title">
+          <h2 id="editor-game-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="2" y="4" width="20" height="13" rx="2"/>
+              <path d="M8 21h8M12 17v4"/>
+            </svg>
+            Partida em edição
+          </h2>
+
+
+          <p>Código dos alunos:</p>
+
+
+          <div
+            id="editor-room-code"
+            class="code-box"
+            role="status"
+            aria-live="polite"
+          ></div>
+
+
+          <div class="actions">
+            <button type="button" id="editor-open-screen" class="secondary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="2" y="4" width="20" height="13" rx="2"/>
+                <path d="M8 21h8M12 17v4"/>
+              </svg>
+              Abrir tela de apresentação
+            </button>
+
+
+            <button type="button" id="reset-scores" class="danger">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 12a9 9 0 1015.5-6.3L21 8"/>
+                <path d="M21 3v5h-5"/>
+              </svg>
+              Reiniciar pontuações
+            </button>
+          </div>
+
+
+          <p id="reset-status" class="status" role="status" aria-live="polite"></p>
+        </section>
+
+
+        <form id="edit-game-form" class="card" novalidate>
+          <h2 id="editor-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 20h9"/>
+              <path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/>
+            </svg>
+            Editar partida
+          </h2>
+
+
+          <div class="field">
+            <label for="edit-title-input">Título da partida</label>
+            <input
+              id="edit-title-input"
+              name="edit-title-input"
+              required
+              maxlength="120"
+              autocomplete="off"
+              aria-describedby="edit-title-count"
+            >
+            <span
+              id="edit-title-count"
+              class="character-count"
+              data-count-for="edit-title-input"
+              aria-live="polite"
+            >
+              120 caracteres restantes
+            </span>
+          </div>
+
+
+          <div class="field">
+            <label>Tema visual da tela</label>
+
+            <div class="theme-buttons" id="edit-theme-grid"></div>
+
+            <input type="hidden" id="edit-theme-input" value="none">
+          </div>
+
+
+          <div class="field">
+            <label>Modo da tela de apresentação</label>
+
+            <div class="theme-buttons" id="edit-screen-mode-grid"></div>
+
+            <input type="hidden" id="edit-screen-mode" value="light">
+          </div>
+
+
+          <div class="field">
+            <label>Cor da tela de apresentação</label>
+
+            <div class="color-grid" id="edit-screen-color-grid"></div>
+
+            <input type="hidden" id="edit-screen-color" value="#2563eb">
+          </div>
+
+
+          <div class="field">
+            <label for="edit-password-input">Senha de edição</label>
+            <input
+              id="edit-password-input"
+              name="edit-password-input"
+              type="password"
+              required
+              autocomplete="current-password"
+            >
+          </div>
+
+
+          <fieldset>
+            <legend>Perguntas e respostas</legend>
+
+
+            <p class="hint">
+              A partida deve ter de 5 a 20 pares. Perguntas e respostas não podem se repetir.
+            </p>
+
+
+            <div id="edit-items"></div>
+
+
+            <div class="actions">
+              <button type="button" id="add-edit-item" class="secondary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 5v14M5 12h14"/>
+                </svg>
+                Adicionar par
+              </button>
+            </div>
+          </fieldset>
+
+
+          <div class="actions">
+            <button type="submit" id="update-button" class="create-button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                <path d="M17 21v-8H7v8M7 3v5h8"/>
+              </svg>
+              Salvar alterações
+            </button>
+          </div>
+
+
+          <p id="editor-status" class="status" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
+
+      <section id="result" class="card" hidden aria-labelledby="result-title">
+        <h2 id="result-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 6L9 17l-5-5"/>
+          </svg>
+          Partida salva
+        </h2>
+
+
+        <p>Código dos alunos:</p>
+
+
+        <div
+          id="room-code"
+          class="code-box"
+          role="status"
+          aria-live="polite"
+        ></div>
+
+
+        <div class="actions">
+          <button type="button" id="open-screen" class="secondary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="2" y="4" width="20" height="13" rx="2"/>
+              <path d="M8 21h8M12 17v4"/>
+            </svg>
+            Abrir tela de apresentação
+          </button>
+
+
+          <button
+            type="button"
+            id="back-home-after-create"
+            class="back-button"
+            aria-label="Voltar para o painel do professor"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Voltar ao início
+          </button>
+        </div>
+      </section>
+    </main>
+
+
+    <footer class="site-footer">
+      <a
+        class="footer-brand"
+        href="https://junta.e.aprende.nicolasjoffre.com.br/"
+        target="_blank"
+        rel="noopener"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/>
+          <path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/>
+        </svg>
+        Junta&amp;Aprende
+      </a>
+
+
+      <span class="footer-credits">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/>
+          <path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/>
+        </svg>
+        Créditos:
+        <a
+          href="https://junta.e.aprende.nicolasjoffre.com.br/"
+          target="_blank"
+          rel="noopener"
+        >
+          Nícolas Joffre De Souza
+        </a>
+      </span>
+    </footer>
+  </div>
+</body>
+</html>

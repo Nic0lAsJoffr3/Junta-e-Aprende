@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+  <title>Junta&amp;Aprende — Área dos jogadores</title>
+
+
+  <meta
+    name="description"
+    content="Entre em uma partida do Junta&Aprende, associe perguntas e respostas e acompanhe sua pontuação."
+  >
+  <meta name="author" content="Nícolas Joffre De Souza">
+  <meta name="theme-color" content="#2563eb">
+
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Junta&amp;Aprende">
+  <meta property="og:title" content="Junta&amp;Aprende — Área dos jogadores">
+  <meta
+    property="og:description"
+    content="Entre em uma partida, associe perguntas e respostas e acompanhe sua pontuação."
+  >
+  <meta property="og:url" content="https://junta.e.aprende.nicolasjoffre.com.br/index.html">
+  <meta property="og:image" content="https://junta.e.aprende.nicolasjoffre.com.br/assets/logo.png">
+
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Junta&amp;Aprende — Área dos jogadores">
+  <meta
+    name="twitter:description"
+    content="Entre em uma partida, associe perguntas e respostas e acompanhe sua pontuação."
+  >
+  <meta name="twitter:image" content="https://junta.e.aprende.nicolasjoffre.com.br/assets/logo.png">
+
+
+  <link rel="icon" href="assets/icon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="assets/icon.ico" type="image/x-icon">
+
+
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/components.css">
+
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/scoring.js"></script>
+  <script src="js/index.js" defer></script>
+
+
+  <style>
+    .view[hidden] {
+      display: none;
+    }
+
+
+    .game-layout {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: clamp(14px, 2vw, 24px);
+    }
+
+
+    .connection-layer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5;
+      overflow: visible;
+    }
+
+
+    .connection-line {
+      fill: none;
+      stroke-width: 5;
+      stroke-linecap: round;
+      opacity: 0.9;
+    }
+
+
+    .game-column {
+      background: var(--surface-alt);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: clamp(14px, 2vw, 20px);
+    }
+
+
+    .game-column h3 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 14px;
+      font-size: 1.05rem;
+    }
+
+
+    .game-column h3 svg {
+      width: 20px;
+      height: 20px;
+      color: var(--theme-accent);
+    }
+
+
+    .option {
+      position: relative;
+      z-index: 6;
+      width: 100%;
+      justify-content: flex-start;
+      text-align: left;
+      background: var(--surface);
+      color: var(--text);
+      border: 2px solid var(--line);
+      box-shadow: 0 3px 0 var(--line);
+      margin-bottom: 10px;
+      padding: 13px 44px 13px 15px;
+      min-height: 54px;
+      white-space: normal;
+    }
+
+
+    .option:hover:not(:disabled) {
+      border-color: var(--theme-accent);
+      box-shadow: 0 5px 0 var(--theme-accent);
+    }
+
+
+    .option.selected {
+      background: var(--theme-accent);
+      border-color: var(--theme-accent-dark);
+      color: #ffffff;
+      box-shadow: 0 4px 0 var(--theme-accent-dark);
+    }
+
+
+    .option.selected::after {
+      content: "✓";
+      position: absolute;
+      top: 50%;
+      right: 12px;
+      transform: translateY(-50%);
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #ffffff;
+      color: var(--theme-accent-dark);
+      font-weight: 900;
+      font-size: 14px;
+    }
+
+
+    .option.linked {
+      border-color: currentColor;
+    }
+
+
+    .selection-hint {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--muted);
+    }
+
+
+    .progress {
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+
+
+    .result-score {
+      font-size: clamp(2rem, 8vw, 3.2rem);
+      font-weight: 900;
+      color: var(--theme-accent);
+      margin: 10px 0;
+    }
+
+
+    .result-list {
+      list-style: none;
+      padding: 0;
+      margin: 18px 0 0;
+      display: grid;
+      gap: 10px;
+    }
+
+
+    .result-item {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+      align-items: start;
+      background: var(--surface-alt);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: left;
+    }
+
+
+    .result-item.correct {
+      border-color: var(--success);
+    }
+
+
+    .result-item.incorrect {
+      border-color: var(--danger);
+    }
+
+
+    .result-icon {
+      width: 22px;
+      height: 22px;
+      margin-top: 2px;
+    }
+
+
+    .result-item.correct .result-icon {
+      color: var(--success);
+    }
+
+
+    .result-item.incorrect .result-icon {
+      color: var(--danger);
+    }
+
+
+    .rotate-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      display: none;
+      place-items: center;
+      padding: 24px;
+      background: var(--background);
+      color: var(--text);
+      text-align: center;
+    }
+
+
+    .rotate-overlay svg {
+      width: 96px;
+      height: 96px;
+      color: var(--theme-accent);
+      margin-bottom: 18px;
+    }
+
+
+    .rotate-overlay h2 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+
+
+    .rotate-overlay p {
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+
+    @media (max-width: 860px) and (orientation: portrait) {
+      body.game-active {
+        overflow: hidden;
+      }
+
+
+      body.game-active .container {
+        display: none;
+      }
+
+
+      body.game-active .rotate-overlay {
+        display: grid;
+      }
+    }
+
+
+    @media (max-width: 720px) {
+      .game-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="rotate-overlay" aria-live="polite">
+    <div>
+      <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 14 14"><title>phone-rotate-mobile</title><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6.997 9.802c.363.311.899.332 1.263.022c.574-.488 1.076-.99 1.564-1.564c.31-.364.29-.9-.022-1.263a25.6 25.6 0 0 0-2.799-2.799c-.363-.311-.899-.331-1.263-.022c-.574.488-1.076.99-1.564 1.564c-.31.364-.289.9.022 1.263a25.6 25.6 0 0 0 2.799 2.799m-5.515 2.746q1.084.485 2.123-.093q.484-1.084-.093-2.122m9.038-8.968q-1.085-.484-2.124.093q-.484 1.084.093 2.122"/><path d="M4.63 1.188C2.203 1.939.874 3.953.874 7c0 2.546.928 4.371 2.65 5.34M10.53 1.674c1.707.972 2.627 2.792 2.627 5.327c0 3.088-1.365 5.115-3.856 5.842"/></g></svg>
+
+      <h2>Vire o celular</h2>
+
+      <p>
+        Para jogar, gire o celular para a posição horizontal.
+      </p>
+    </div>
+  </div>
+
+  <a class="skip-link" href="#main-content">
+    Pular para o conteúdo principal
+  </a>
+
+
+  <div class="container">
+    <header>
+      <h1>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/>
+          <path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/>
+        </svg>
+        Junta&amp;Aprende
+      </h1>
+
+
+      <nav class="nav-links" aria-label="Navegação principal">
+        <a href="config.html">Configurações</a>
+        <a href="adm.html">Administrador</a>
+      </nav>
+    </header>
+
+
+    <main id="main-content">
+      <section id="entry-view" class="view" aria-labelledby="entry-title">
+        <div class="card home-card">
+          <h2 id="entry-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M6 12h4M8 10v4"/>
+              <path d="M15 11h.01M18 13h.01"/>
+              <path d="M17.3 5H6.7a4 4 0 00-3.9 4.9l1.4 6A3 3 0 009.1 18l1.1-2h3.6l1.1 2a3 3 0 005.1-2.1l1.4-6A4 4 0 0017.3 5z"/>
+            </svg>
+            Entrar na partida
+          </h2>
+
+
+          <form id="entry-form" novalidate>
+            <div class="field" id="code-field">
+              <label for="room-code">Código da partida</label>
+              <input
+                id="room-code"
+                name="room-code"
+                required
+                maxlength="6"
+                autocomplete="off"
+                aria-describedby="room-code-hint"
+              >
+              <p id="room-code-hint" class="hint">
+                Digite o código informado pelo professor.
+              </p>
+            </div>
+
+
+            <div class="field">
+              <label for="player-name">Seu nome</label>
+              <input
+                id="player-name"
+                name="player-name"
+                required
+                maxlength="60"
+                autocomplete="name"
+              >
+            </div>
+
+
+            <button type="submit" class="create-button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M5 12h14M13 6l6 6-6 6"/>
+              </svg>
+              Entrar e jogar
+            </button>
+
+
+            <p id="entry-status" class="status" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
+
+
+      <section id="played-view" class="view" hidden aria-labelledby="played-title">
+        <div class="card home-card">
+          <h2 id="played-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 8v4l2 2"/>
+            </svg>
+            Partida já concluída
+          </h2>
+
+
+          <p id="played-message"></p>
+
+
+          <div id="played-score" class="code-box"></div>
+
+
+          <div class="actions">
+            <button type="button" id="back-to-entry" class="back-button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+              </svg>
+              Voltar
+            </button>
+          </div>
+        </div>
+      </section>
+
+
+      <section id="game-view" class="view" hidden aria-labelledby="game-title">
+        <div class="card">
+          <h2 id="game-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M6 12h4M8 10v4"/>
+              <path d="M15 11h.01M18 13h.01"/>
+              <path d="M17.3 5H6.7a4 4 0 00-3.9 4.9l1.4 6A3 3 0 009.1 18l1.1-2h3.6l1.1 2a3 3 0 005.1-2.1l1.4-6A4 4 0 0017.3 5z"/>
+            </svg>
+            <span id="game-heading"></span>
+          </h2>
+
+
+          <p class="progress" id="game-progress" aria-live="polite"></p>
+
+
+          <div class="game-layout" id="game-layout">
+            <svg
+              id="connection-layer"
+              class="connection-layer"
+              aria-hidden="true"
+              focusable="false"
+            ></svg>
+
+
+            <div class="game-column">
+              <h3>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M9.1 9a3 3 0 015.8 1c0 2-3 2.2-3 4"/>
+                  <path d="M12 17h.01"/>
+                </svg>
+                Perguntas
+              </h3>
+
+
+              <p id="question-selection-hint" class="selection-hint">
+                Toque em uma pergunta para selecioná-la.
+              </p>
+
+
+              <div id="questions-list"></div>
+            </div>
+
+
+            <div class="game-column">
+              <h3>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M20 6L9 17l-5-5"/>
+                </svg>
+                Respostas
+              </h3>
+
+
+              <p id="answer-selection-hint" class="selection-hint">
+                Toque em uma resposta para selecioná-la.
+              </p>
+
+
+              <div id="answers-list"></div>
+            </div>
+          </div>
+
+
+          <div class="actions">
+            <button type="button" id="confirm-button" class="create-button" disabled>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+              Confirmar respostas
+            </button>
+          </div>
+
+
+          <p id="game-status" class="status" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+
+
+      <section id="result-view" class="view" hidden aria-labelledby="result-title">
+        <div class="card home-card">
+          <h2 id="result-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 6L9 17l-5-5"/>
+            </svg>
+            Resultado final
+          </h2>
+
+
+          <p id="result-message"></p>
+
+
+          <div id="result-score" class="result-score" role="status" aria-live="polite"></div>
+
+
+          <ul id="result-list" class="result-list"></ul>
+        </div>
+      </section>
+    </main>
+
+
+    <footer class="site-footer">
+      <a
+        class="footer-brand"
+        href="https://junta.e.aprende.nicolasjoffre.com.br/"
+        target="_blank"
+        rel="noopener"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/>
+          <path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/>
+        </svg>
+        Junta&amp;Aprende
+      </a>
+
+
+      <span class="footer-credits">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/>
+          <path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/>
+        </svg>
+        Créditos:
+        <a
+          href="https://junta.e.aprende.nicolasjoffre.com.br/"
+          target="_blank"
+          rel="noopener"
+        >
+          Nícolas Joffre De Souza
+        </a>
+      </span>
+    </footer>
+  </div>
+</body>
+</html>
